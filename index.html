@@ -40,9 +40,10 @@
 
       <textarea id="txtJapanese" rows="10"></textarea>
       <button id="btnDecimate" class="btn btn-primary">Decimate</button>
-      <textarea id="txtEnglish" rows="10"></textarea>
+      <textarea id="txtEnglish" rows="10" readonly="true"></textarea>
       </br>
       <label class="checkbox"><input id="chkHuman" type="checkbox">Human-readable output</label>
+      <button id="btnExample" class="btn">Try some example text</button>
 
     </div> <!-- /container -->
 
@@ -50,7 +51,7 @@
     <script src="bootstrap/js/bootstrap.min.js"></script>
     <script src="parse_string.js" charset="utf-8"></script>
     <script>
-      $("#btnDecimate").click(function() {
+      function decimate() {
         var lines = $("#txtJapanese").val().split("\n");
         var english = [];
         for (var i = 0; i < lines.length; ++i) {
@@ -61,6 +62,13 @@
           english.push(number);
         }
         $("#txtEnglish").val(english.join("\n"));
+      }
+
+      $("#btnDecimate").click(decimate);
+      $("#chkHuman").click(decimate);
+
+      $("#btnExample").click(function() {
+        $("#txtJapanese").val("千五百万\n千5百万\n千500万\n130千百万");
       });
     </script>
   </body>
