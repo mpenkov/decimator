@@ -31,6 +31,16 @@ var MUL_OKU   = "MUL_OKU";
 var MUL_CHOU  = "MUL_CHOU";
 
 var CHAR2TOK = {
+    "0": DIGIT_0,
+    "1": DIGIT_1,
+    "2": DIGIT_2,
+    "3": DIGIT_3,
+    "4": DIGIT_4,
+    "5": DIGIT_5,
+    "6": DIGIT_6,
+    "7": DIGIT_7,
+    "8": DIGIT_8,
+    "9": DIGIT_9,
     "一": DIGIT_1J,
     "二": DIGIT_2J,
     "三": DIGIT_3J,
@@ -49,6 +59,16 @@ var CHAR2TOK = {
 };
 
 var TOK2INT = {
+    DIGIT_0: 0,
+    DIGIT_1: 1,
+    DIGIT_2: 2,
+    DIGIT_3: 3,
+    DIGIT_4: 4,
+    DIGIT_5: 5,
+    DIGIT_6: 6,
+    DIGIT_7: 7,
+    DIGIT_8: 8,
+    DIGIT_9: 9,
     DIGIT_1J: 1,
     DIGIT_2J: 2,
     DIGIT_3J: 3,
@@ -65,6 +85,11 @@ var TOK2INT = {
     MUL_OKU: 1e8,
     MUL_CHOU: 1e12
 };
+
+//
+// multipliers in descending order
+//
+var MUL = [MUL_CHOU, MUL_OKU, MUL_MAN, MUL_SEN, MUL_HYAKU, MUL_JUU];
 
 //
 // Returns the zero-based index of key in array, starting the search at the
@@ -88,23 +113,19 @@ function read_tokens_traditional(tokens) {
     if (tokens.length === 0) { // terminating case
         return 1;
     } 
-    var mul = [ MUL_CHOU, MUL_OKU, MUL_MAN, MUL_SEN, MUL_HYAKU, MUL_JUU ];
     var start = 0;
-    var end = 0;
     var result = 0;
-    for (var i = 0; i < mul.length && start < tokens.length; ++i) {
-        end = index_of(tokens, mul[i], start);
+    for (var i = 0; i < MUL.length && start < tokens.length; ++i) {
+        var end = index_of(tokens, MUL[i], start);
         if (end === -1) {
             continue;
         }
-        var factor = TOK2INT[mul[i]];
-        //console.debug("mul[i] = " + mul[i]);
-        //console.debug("factor = " + factor);
+        var factor = TOK2INT[MUL[i]];
         result += factor*read_tokens_traditional(tokens.slice(start, end));
         start = end + 1;
 
         //
-        // TODO: a strict checker should also make sure mul[i] doesn't appear
+        // TODO: a strict checker should also make sure MUL[i] doesn't appear
         // in tokens[end+1:].
         //
     }
@@ -114,7 +135,91 @@ function read_tokens_traditional(tokens) {
     return result;
 }
 
+//
+// The Japanese also write numbers using a mixture of Arabic numerals and 
+// Kanji.
+//
+function read_tokens_mixed(tokens) {
+    if (tokens.length === 0) { 
+        return 1;
+    } 
+    var start = 0;
+    var result = 0;
+    for (var i = 0; i < MUL.length && start < tokens.length; ++i) {
+        var end = index_of(tokens, MUL[i], start);
+        if (end === -1) {
+            continue;
+        }
+        var factor = TOK2INT[MUL[i]];
+        result += factor*read_tokens_mixed(tokens.slice(start, end));
+        start = end + 1;
+
+        //
+        // TODO: a strict checker should also make sure MUL[i] doesn't appear
+        // in tokens[end+1:].
+        //
+    }
+    if (start == 0) { // terminating case -- no multipliers found in string
+        for (var i = 0; i < tokens.length; ++i) {
+            result += TOK2INT[tokens[tokens.length-i-1]]*Math.pow(10, i);
+        }
+    }
+    return result;
+}
+
+//
+// Determine if the tokens represent a number in traditional or mixed form.
+// Returns null otherwise.
+//
+function id_tokens(tokens) {
+    var trad = 0;
+    var arabic = 0;
+    for (var i = 0; i < tokens.length; ++i) {
+        switch (tokens[i]) {
+            case DIGIT_0:
+            case DIGIT_1:
+            case DIGIT_2:
+            case DIGIT_3:
+            case DIGIT_4:
+            case DIGIT_5:
+            case DIGIT_6:
+            case DIGIT_7:
+            case DIGIT_8:
+            case DIGIT_9:
+                ++arabic;
+                break;
+            case DIGIT_1J:
+            case DIGIT_2J:
+            case DIGIT_3J:
+            case DIGIT_4J:
+            case DIGIT_5J:
+            case DIGIT_6J:
+            case DIGIT_7J:
+            case DIGIT_8J:
+            case DIGIT_9J:
+            case MUL_JUU:
+            case MUL_HYAKU:
+            case MUL_SEN:
+            case MUL_MAN:
+            case MUL_OKU:
+            case MUL_CHOU:
+                ++trad;
+                break;
+        }
+    }
+    if (arabic) {
+        return "mixed";
+    } else if (trad) {
+        return "traditional";
+    }
+    return null;
+}
+
 function parse_string(s) {
+    if (s.length === 0) {
+        return "";
+    }
+
     var tokens = [];
     // ... a kingdom for a map() function...
     for (var i = 0; i < s.length; ++i) {
@@ -128,7 +233,18 @@ function parse_string(s) {
         }
     }
     // TODO: check for traditional vs. mixed
-    var result = read_tokens_traditional(tokens);
+    var result = "";
+    var id = id_tokens(tokens);
+    if (id == "traditional") {
+        result = read_tokens_traditional(tokens);
+    } else if (id == "mixed") {
+        result = read_tokens_mixed(tokens);
+    } else {
+        return "";
+    }
+    //console.debug(s);
+    //console.debug(tokens);
+    //console.debug(result);
     return result;
 }
 
