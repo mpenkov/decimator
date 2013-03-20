@@ -14,6 +14,7 @@ test("sanity check", function() {
     ok(parse_string("万") === 10000,            "万");
     ok(parse_string("億") === 100000000,        "億");
     ok(parse_string("兆") === 1000000000000,    "兆");
+    ok(parse_string("1234567890") === 1234567890, "1234567890");
 });
 
 test("simple combinations", function() {
@@ -29,10 +30,15 @@ test("simple combinations", function() {
     ok(parse_string("千四百七十三"  ) === 1473,           "千四百七十三"  );
 
     ok(parse_string("五千四百七十三") === 5473,           "五千四百七十三");
+
+    ok(parse_string("10万") == 100000, "10万");
+    ok(parse_string("10万2千") == 102000, "10万2千");
 });
 
 test("tricky combinations", function() {
     ok(parse_string("千五百万"      ) === 15000000,       "千五百万"      );
+    ok(parse_string("千5百万"      ) === 15000000,       "千5百万"     );
+    ok(parse_string("千500万"      ) === 15000000,       "千500万"     );
 });
 
 test("wikipedia", function() {
