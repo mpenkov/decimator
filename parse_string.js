@@ -173,6 +173,8 @@ function read_tokens_mixed(tokens) {
         for (var i = 0; i < tokens.length; ++i) {
             result += TOK2INT[tokens[tokens.length-i-1]]*Math.pow(10, i);
         }
+    } else if (start < tokens.length - 1) { // consume remainder of tokens, if any.
+        result += read_tokens_mixed(tokens.slice(start));
     }
     return result;
 }
