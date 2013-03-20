@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>The Decimator 2.0</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap -->
+    <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
+
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
+      }
+    </style>
+
+  </head>
+  <body>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="brand" href="#">The Decimator 2.0</a>
+          <div class="nav-collapse collapse">
+            <ul class="nav">
+              <li class="active"><a href="#">Home</a></li>
+              <li><a href="#about">About</a></li>
+              <li><a href="#contact">Contact</a></li>
+            </ul>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+
+      <p>Enter some Japanese numbers and click "Decimate":</p>
+
+      <textarea id="txtJapanese" rows="10"></textarea>
+      <button id="btnDecimate" class="btn btn-primary">Decimate</button>
+      <textarea id="txtEnglish" rows="10"></textarea>
+      </br>
+      <label class="checkbox"><input id="chkHuman" type="checkbox">Human-readable output</label>
+
+    </div> <!-- /container -->
+
+    <script src="http://code.jquery.com/jquery.js"></script>
+    <script src="bootstrap/js/bootstrap.min.js"></script>
+    <script src="parse_string.js" charset="utf-8"></script>
+    <script>
+      $("#btnDecimate").click(function() {
+        var lines = $("#txtJapanese").val().split("\n");
+        var english = [];
+        for (var i = 0; i < lines.length; ++i) {
+          var number = parse_string(lines[i]);
+          if ($("#chkHuman").is(":checked")) {
+            number = human_readable(number);
+          }
+          english.push(number);
+        }
+        $("#txtEnglish").val(english.join("\n"));
+      });
+    </script>
+  </body>
+</html>

@@ -59,11 +59,11 @@ var TOK2INT = {
     DIGIT_8J: 8,
     DIGIT_9J: 9,
     MUL_JUU: 10,
-    MUL_HYAKU: 100,
-    MUL_SEN: 1000,
-    MUL_MAN: 10000,
-    MUL_OKU: 100000000,
-    MUL_CHOU: 1000000000000
+    MUL_HYAKU: 1e2,
+    MUL_SEN: 1e3,
+    MUL_MAN: 1e4,
+    MUL_OKU: 1e8,
+    MUL_CHOU: 1e12
 };
 
 //
@@ -129,6 +129,21 @@ function parse_string(s) {
     }
     // TODO: check for traditional vs. mixed
     var result = read_tokens_traditional(tokens);
-    //console.debug(result);
+    return result;
+}
+
+function human_readable(number) {
+    var divisors = {1e12: "trillion", 1e9: "billion", 1e6: "million", 1e3: "thousand"};
+    var sorted = Object.keys(divisors);
+    sorted.sort();
+    sorted.reverse();
+    var result = number;
+    for (var i = 0; i < sorted.length; ++i) {
+        var tmp = number/sorted[i];
+        if (tmp >= 0.5) {
+            result = tmp +  " " + divisors[sorted[i]];
+            break;
+        }
+    }
     return result;
 }
