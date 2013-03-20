@@ -39,6 +39,7 @@ test("tricky combinations", function() {
     ok(parse_string("千五百万"      ) === 15000000,       "千五百万"      );
     ok(parse_string("千5百万"      ) === 15000000,       "千5百万"     );
     ok(parse_string("千500万"      ) === 15000000,       "千500万"     );
+    ok(parse_string("130千百万"      ) === 1301000000,       "130千百万"     );
 });
 
 test("wikipedia", function() {
