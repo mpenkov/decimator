@@ -36,6 +36,9 @@ test('tricky', function() {
   equal(parse_string('千5百万'), 15000000, '千5百万') ,
   equal(parse_string('千500万'), 15000000, '千500万') ,
   equal(parse_string('130千百万'), 1301000000, '130千百万')
+  equal(parse_string('７兆3千4万'), 7000030040000, '７兆3千4万')
+  equal(parse_string('3千4万'), 30040000, '3千4万')
+  equal(parse_string('3千4'), 3004, '3千4')
 });
 
 test('wikipedia', function() {
